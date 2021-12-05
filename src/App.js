@@ -3,6 +3,8 @@ import { Typography, Box, withStyles } from '@material-ui/core';
 import logo from '../src/images/COVID19.jpg';
 import Cards from '../src/component/Cards';
 import { fetchData } from '../src/service/api';
+import Countries from '../src/component/Countries';
+import Chart from '../src/component/Chart';
 
 const style =
 {
@@ -22,16 +24,16 @@ const style =
     textAlign: 'center',
     padding: 10,
     margin: 10,
-    color: 'white',
+    color: 'white'
   },
   banner: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
   },
-  lastUpdate :{
-    color :"white",
-    fontSize:16
+  lastUpdate: {
+    color: "white",
+    fontSize: 16
   }
 
 }
@@ -39,31 +41,43 @@ const style =
 
 class App extends Component {
   state = {
-    data: {}
+    data: {},
+    country: ""
   }
   async componentDidMount() {
     const fetchedData = await fetchData();
     this.setState({ data: fetchedData })
     console.log(fetchedData);
   }
+
+  handleCountryChange = async (country) => {
+    const fetchedData = await fetchData(country);
+    this.setState({ data: fetchedData, country: country })
+  }
   render() {
     const { data } = this.state;
     return (
       <>
         <Box className={this.props.classes.container}>
-          <Box className={this.props.classes.header}>  COVID-19 Live Tracker
+          <Box className={this.props.classes.header}>
+            COVID-19 Live Tracker
           </Box>
           <Typography className={this.props.classes.lastUpdate}>Last updated: {data.lastUpdate && new Date(data.lastUpdate).toDateString()}</Typography>
         </Box>
-       
+
         <Box className={this.props.classes.banner}>
           <img style={{ width: 350 }} src={logo} alt='covid' />
         </Box>
+
         <Box className={this.props.classes.banner}>
-          <Cards data={data}/>
+          <Cards data={data} />
         </Box>
+        <Box className={this.props.classes.banner}>
+          <Countries className={this.props.classes.header} handleCountryChange={this.handleCountryChange} />
+        </Box>
+        <Chart className={this.props.classes.header} data={data} />
       </>
-      )
+    )
 
   }
 
